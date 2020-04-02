@@ -1,6 +1,7 @@
 package com.rosato.service.user.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -8,6 +9,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.rosato.service.user.controllers.UserEmailsController.EmailsAlreadyAddedException;
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.models.UserEmail;
@@ -92,6 +94,26 @@ public class UserEmailsControllerTest {
     assertEquals(3, user.getEmails().size());
     verify(userService).findById(userId);
     verify(userService).update(oldUser);
+  }
+
+  @Test
+  public void shouldThrowEmailsAlreadyAddedException() {
+    String email = "email@test.com";
+    Long userId = 1L;
+
+    User oldUser = buildUser();
+    when(userService.findById(userId)).thenAnswer(new Answer<User>() {
+      public User answer(InvocationOnMock invocation) throws Throwable {
+        return oldUser;
+      }
+    });
+
+    List<String> emails = new ArrayList<>();
+    emails.add(email);
+    assertThrows(EmailsAlreadyAddedException.class, () -> {
+      userEmailsController.create(userId, emails);
+    });
+    verify(userService).findById(userId);
   }
 
   private User buildUser() {
