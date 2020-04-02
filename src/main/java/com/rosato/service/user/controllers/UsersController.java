@@ -14,6 +14,7 @@ import com.rosato.service.user.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -170,5 +171,15 @@ public class UsersController {
     }
 
     return userService.create(user);
+  }
+
+  @DeleteMapping("/{userId}")
+  @ApiOperation(value = "Delete user")
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "User successfully deleted"),
+      @ApiResponse(code = 404, message = "User not found") })
+  @ResponseStatus(HttpStatus.OK)
+  public void delete(@PathVariable Long userId) {
+    User user = userService.findById(userId);
+    userService.delete(user);
   }
 }

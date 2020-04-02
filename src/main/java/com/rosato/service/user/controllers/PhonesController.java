@@ -4,12 +4,14 @@ import java.util.List;
 
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
+import com.rosato.service.user.services.PhoneService;
 import com.rosato.service.user.services.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -26,9 +28,16 @@ import io.swagger.annotations.ApiResponses;
 public class PhonesController {
   @Autowired
   private UserService userService;
+  @Autowired
+  private PhoneService phoneService;
 
   @ResponseStatus(code = HttpStatus.NOT_MODIFIED, reason = "phone(s) already added to the user")
   public static class PhonesAlreadyAddedException extends RuntimeException {
+    private static final long serialVersionUID = 1L;
+  }
+
+  @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "phone not found")
+  public static class PhoneNotFoundException extends RuntimeException {
     private static final long serialVersionUID = 1L;
   }
 
@@ -54,5 +63,15 @@ public class PhonesController {
     }
 
     return userService.update(user);
+  }
+
+  @PutMapping("/{phoneId}")
+  @ApiOperation(value = "Update user's phone", response = Phone.class)
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Phone successfully updated"),
+      @ApiResponse(code = 404, message = "Phone not found") })
+  public Phone update(@PathVariable Long phoneId, @RequestBody String phone) {
+    Phone p = phoneService.findById(phoneId);
+    p.setPhone(phone);
+    return phoneService.update(p);
   }
 }

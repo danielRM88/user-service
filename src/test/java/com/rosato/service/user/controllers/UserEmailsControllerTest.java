@@ -13,6 +13,7 @@ import com.rosato.service.user.controllers.UserEmailsController.EmailsAlreadyAdd
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.models.UserEmail;
+import com.rosato.service.user.services.UserEmailService;
 import com.rosato.service.user.services.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +28,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class UserEmailsControllerTest {
   @Autowired
   private UserEmailsController userEmailsController;
+  @Autowired
+  private UserEmailService userEmailService;
   private UserService userService;
 
   @BeforeEach
   public void mockUserService() {
     userService = mock(UserService.class);
     ReflectionTestUtils.setField(userEmailsController, "userService", userService);
+    userEmailService = mock(UserEmailService.class);
+    ReflectionTestUtils.setField(userEmailsController, "userEmailService", userEmailService);
   }
 
   @Test
@@ -114,6 +119,28 @@ public class UserEmailsControllerTest {
       userEmailsController.create(userId, emails);
     });
     verify(userService).findById(userId);
+  }
+
+  @Test
+  public void shouldUpdateEmailFromUser() {
+    Long userEmailId = 1L;
+    UserEmail userEmail = new UserEmail("email@email.com");
+    String newEmail = "new@email.com";
+
+    when(userEmailService.findById(userEmailId)).thenAnswer(new Answer<UserEmail>() {
+      public UserEmail answer(InvocationOnMock invocation) throws Throwable {
+        return userEmail;
+      }
+    });
+
+    when(userEmailService.update(userEmail)).thenAnswer(new Answer<UserEmail>() {
+      public UserEmail answer(InvocationOnMock invocation) throws Throwable {
+        return userEmail;
+      }
+    });
+
+    userEmailsController.update(userEmailId, newEmail);
+    verify(userEmailService).update(userEmail);
   }
 
   private User buildUser() {

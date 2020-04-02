@@ -13,6 +13,7 @@ import com.rosato.service.user.controllers.PhonesController.PhonesAlreadyAddedEx
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.models.UserEmail;
+import com.rosato.service.user.services.PhoneService;
 import com.rosato.service.user.services.UserService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,12 +28,16 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class PhonesControllerTest {
   @Autowired
   private PhonesController phonesController;
+  @Autowired
+  private PhoneService phoneService;
   private UserService userService;
 
   @BeforeEach
   public void mockUserService() {
     userService = mock(UserService.class);
     ReflectionTestUtils.setField(phonesController, "userService", userService);
+    phoneService = mock(PhoneService.class);
+    ReflectionTestUtils.setField(phonesController, "phoneService", phoneService);
   }
 
   @Test
@@ -115,6 +120,28 @@ public class PhonesControllerTest {
       phonesController.create(userId, phones);
     });
     verify(userService).findById(userId);
+  }
+
+  @Test
+  public void shouldUpdatePhoneFromUser() {
+    Long phoneId = 1L;
+    Phone phone = new Phone("123456789");
+    String newPhone = "987654321";
+
+    when(phoneService.findById(phoneId)).thenAnswer(new Answer<Phone>() {
+      public Phone answer(InvocationOnMock invocation) throws Throwable {
+        return phone;
+      }
+    });
+
+    when(phoneService.update(phone)).thenAnswer(new Answer<Phone>() {
+      public Phone answer(InvocationOnMock invocation) throws Throwable {
+        return phone;
+      }
+    });
+
+    phonesController.update(phoneId, newPhone);
+    verify(phoneService).update(phone);
   }
 
   private User buildUser() {

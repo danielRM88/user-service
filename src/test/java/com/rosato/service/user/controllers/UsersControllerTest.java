@@ -219,6 +219,21 @@ public class UsersControllerTest {
     });
   }
 
+  @Test
+  public void shouldDeleteUser() {
+    Long userId = 1L;
+    User user = buildUser();
+
+    when(userService.findById(userId)).thenAnswer(new Answer<User>() {
+      public User answer(InvocationOnMock invocation) throws Throwable {
+        return user;
+      }
+    });
+
+    usersController.delete(userId);
+    verify(userService).delete(user);
+  }
+
   private User buildUser() {
     User user = new User();
     user.setFirstName("Daniel");
