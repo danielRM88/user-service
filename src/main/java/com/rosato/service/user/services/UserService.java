@@ -10,6 +10,12 @@ import org.springframework.stereotype.Service;
 public interface UserService {
   List<User> findAll();
 
+  User findById(Long userId);
+
+  Iterable<User> findByFirstName(String firstName);
+
+  Iterable<User> findByLastName(String lastName);
+
   User findByFirstNameAndLastName(String firstName, String lastName);
 
   User create(User user);

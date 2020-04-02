@@ -64,6 +64,7 @@ public class User {
       this.emails = new ArrayList<>();
     }
 
+    email.setUser(this);
     this.emails.add(email);
   }
 
@@ -72,6 +73,7 @@ public class User {
       this.phones = new ArrayList<>();
     }
 
+    phone.setUser(this);
     this.phones.add(phone);
   }
 
@@ -81,6 +83,18 @@ public class User {
 
   public List<Phone> phones() {
     return this.phones;
+  }
+
+  public void setEmails(List<UserEmail> emails) {
+    this.emails = emails;
+  }
+
+  public List<Phone> getPhones() {
+    return phones;
+  }
+
+  public void setPhones(List<Phone> phones) {
+    this.phones = phones;
   }
 
 }

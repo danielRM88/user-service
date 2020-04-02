@@ -10,6 +10,7 @@ import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.models.UserEmail;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,11 @@ public class UserRepositoryTest {
   private UserEmailRepository userEmailRepository;
   @Autowired
   private PhoneRepository phoneRepository;
+
+  @BeforeEach
+  private void cleanUsers() {
+    userRepository.deleteAll();
+  }
 
   @Test
   void injectedComponentsAreNotNull() {
@@ -49,6 +55,46 @@ public class UserRepositoryTest {
     u.setLastName("NewLast");
     userRepository.save(u);
     assertNotNull(userRepository.findByFirstNameAndLastName("New", "NewLast"));
+  }
+
+  @Test
+  public void shouldFindAllUserByFirstName() {
+    String firstName = "Daniel";
+    User u = new User();
+    u.setFirstName(firstName);
+    u.setLastName("Rosato");
+    userRepository.save(u);
+    u = new User();
+    u.setFirstName(firstName);
+    u.setLastName("Test");
+    userRepository.save(u);
+    Iterable<User> users = userRepository.findByFirstName(firstName);
+    int cont = 0;
+    for (User user : users) {
+      assertEquals(firstName, user.getFirstName());
+      cont++;
+    }
+    assertEquals(2, cont);
+  }
+
+  @Test
+  public void shouldFindAllUserByLastName() {
+    String lastName = "Rosato";
+    User u = new User();
+    u.setFirstName("Daniel");
+    u.setLastName(lastName);
+    userRepository.save(u);
+    u = new User();
+    u.setFirstName("John");
+    u.setLastName(lastName);
+    userRepository.save(u);
+    Iterable<User> users = userRepository.findByLastName(lastName);
+    int cont = 0;
+    for (User user : users) {
+      assertEquals(lastName, user.getLastName());
+      cont++;
+    }
+    assertEquals(2, cont);
   }
 
   @Test
@@ -102,7 +148,6 @@ public class UserRepositoryTest {
     u.setLastName("Doe");
     UserEmail ue = new UserEmail();
     ue.setEmail(email);
-    ue.setUser(u);
     u.addUserEmail(ue);
     userRepository.save(u);
     assertEquals(email, userEmailRepository.findByEmail(email).getEmail());
@@ -116,7 +161,6 @@ public class UserRepositoryTest {
     u.setLastName("Doe");
     UserEmail ue = new UserEmail();
     ue.setEmail(email);
-    ue.setUser(u);
     u.addUserEmail(ue);
     userRepository.save(u);
     assertEquals(email, userEmailRepository.findByEmail(email).getEmail());
@@ -132,7 +176,6 @@ public class UserRepositoryTest {
     u.setLastName("LastName");
     Phone p = new Phone();
     p.setPhone(phone);
-    p.setUser(u);
     u.addPhone(p);
     userRepository.save(u);
     assertEquals(phone, phoneRepository.findByPhone(phone).getPhone());
@@ -146,7 +189,6 @@ public class UserRepositoryTest {
     u.setLastName("Test");
     Phone p = new Phone();
     p.setPhone(phone);
-    p.setUser(u);
     u.addPhone(p);
     userRepository.save(u);
     assertEquals(phone, phoneRepository.findByPhone(phone).getPhone());

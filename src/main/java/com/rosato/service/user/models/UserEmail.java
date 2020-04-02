@@ -13,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "emails")
 public class UserEmail {
@@ -26,10 +28,18 @@ public class UserEmail {
   @Size(min = 1, max = 100)
   private String email;
 
+  @JsonIgnore
   @NotNull
   @ManyToOne
   @JoinColumn(name = "user_id")
   private User user;
+
+  public UserEmail() {
+  }
+
+  public UserEmail(String email) {
+    this.email = email;
+  }
 
   public Long getId() {
     return id;

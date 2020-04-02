@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
@@ -62,6 +63,66 @@ public class UserServiceTest {
   }
 
   @Test
+  public void shouldFindUserById() {
+    Long userId = 1L;
+    when(userRepository.findById(userId)).thenAnswer(new Answer<Optional<User>>() {
+      public Optional<User> answer(InvocationOnMock invocation) throws Throwable {
+        return Optional.of(buildUser1());
+      }
+    });
+    assertEquals("Rosato", userService.findById(userId).getLastName());
+    verify(userRepository).findById(userId);
+  }
+
+  @Test
+  public void shouldFindAllUsersByFirstName() {
+    String firstName = "Daniel";
+    when(userRepository.findByFirstName(firstName)).thenAnswer(new Answer<Iterable<User>>() {
+      public Iterable<User> answer(InvocationOnMock invocation) throws Throwable {
+        List<User> list = new ArrayList<>();
+        User u = new User();
+        u.setFirstName(firstName);
+        u.setLastName("Last");
+        list.add(u);
+        u = new User();
+        u.setFirstName(firstName);
+        u.setLastName("NewLast");
+        list.add(u);
+        return list;
+      }
+    });
+    Iterable<User> users = userService.findByFirstName(firstName);
+    for (User user : users) {
+      assertEquals(firstName, user.getFirstName());
+    }
+    verify(userRepository).findByFirstName(firstName);
+  }
+
+  @Test
+  public void shouldFindAllUsersByLastName() {
+    String lastName = "Daniel";
+    when(userRepository.findByFirstName(lastName)).thenAnswer(new Answer<Iterable<User>>() {
+      public Iterable<User> answer(InvocationOnMock invocation) throws Throwable {
+        List<User> list = new ArrayList<>();
+        User u = new User();
+        u.setFirstName("Daniel");
+        u.setLastName(lastName);
+        list.add(u);
+        u = new User();
+        u.setFirstName("John");
+        u.setLastName(lastName);
+        list.add(u);
+        return list;
+      }
+    });
+    Iterable<User> users = userService.findByLastName(lastName);
+    for (User user : users) {
+      assertEquals(lastName, user.getLastName());
+    }
+    verify(userRepository).findByLastName(lastName);
+  }
+
+  @Test
   public void shouldFindUserByFirstAndLastName() {
     when(userRepository.findByFirstNameAndLastName("Daniel", "Rosato")).thenAnswer(new Answer<User>() {
       public User answer(InvocationOnMock invocation) throws Throwable {
@@ -108,31 +169,19 @@ public class UserServiceTest {
 
   private User buildUser1() {
     User user = new User();
-    UserEmail email = new UserEmail();
-    email.setEmail("email@test.com");
-    email.setUser(user);
-    Phone phone = new Phone();
-    phone.setPhone("1234567890");
-    phone.setUser(user);
     user.setFirstName("Daniel");
     user.setLastName("Rosato");
-    user.addUserEmail(email);
-    user.addPhone(phone);
+    user.addUserEmail(new UserEmail("email@test.com"));
+    user.addPhone(new Phone("1234567890"));
     return user;
   }
 
   private User buildUser2() {
     User user = new User();
-    UserEmail email = new UserEmail();
-    email.setEmail("email2@test.com");
-    email.setUser(user);
-    Phone phone = new Phone();
-    phone.setPhone("0987654321");
-    phone.setUser(user);
     user.setFirstName("John");
     user.setLastName("Doe");
-    user.addUserEmail(email);
-    user.addPhone(phone);
+    user.addUserEmail(new UserEmail("email2@test.com"));
+    user.addPhone(new Phone("0987654321"));
     return user;
   }
 }
