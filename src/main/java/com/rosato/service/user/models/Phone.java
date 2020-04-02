@@ -63,4 +63,18 @@ public class Phone {
     this.user = user;
   }
 
+  @Override
+  public boolean equals(Object otherPhone) {
+    boolean result;
+    if (phone == null) {
+      result = false;
+    } else if (otherPhone instanceof Phone) {
+      Phone phone = (Phone) otherPhone;
+      result = this.getPhone().equals(phone.getPhone());
+    } else {
+      result = false;
+    }
+
+    return result;
+  }
 }

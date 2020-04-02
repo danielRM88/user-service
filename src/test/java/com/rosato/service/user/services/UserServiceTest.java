@@ -2,6 +2,7 @@ package com.rosato.service.user.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.rosato.service.user.controllers.UserEmailsController.UserNotFoundException;
 import com.rosato.service.user.models.Phone;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.models.UserEmail;
@@ -72,6 +74,13 @@ public class UserServiceTest {
     });
     assertEquals("Rosato", userService.findById(userId).getLastName());
     verify(userRepository).findById(userId);
+  }
+
+  @Test
+  public void shouldThrowUserNotFoundExceptionWhenUserNotFound() {
+    assertThrows(UserNotFoundException.class, () -> {
+      userService.findById(-1L);
+    });
   }
 
   @Test

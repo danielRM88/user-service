@@ -64,4 +64,19 @@ public class UserEmail {
   public void setUser(User user) {
     this.user = user;
   }
+
+  @Override
+  public boolean equals(Object otherUserEmail) {
+    boolean result;
+    if (otherUserEmail == null) {
+      result = false;
+    } else if (otherUserEmail instanceof UserEmail) {
+      UserEmail userEmail = (UserEmail) otherUserEmail;
+      result = this.getEmail().equals(userEmail.getEmail());
+    } else {
+      result = false;
+    }
+
+    return result;
+  }
 }

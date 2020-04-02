@@ -139,17 +139,13 @@ public class UsersController {
     List<String> emails = request.getEmails();
     if (emails != null) {
       for (String email : emails) {
-        UserEmail e = new UserEmail();
-        e.setEmail(email);
-        user.addUserEmail(e);
+        user.addUserEmail(new UserEmail(email));
       }
     }
     List<String> phones = request.getPhones();
     if (phones != null) {
       for (String phone : phones) {
-        Phone p = new Phone();
-        p.setPhone(phone);
-        user.addPhone(p);
+        user.addPhone(new Phone(phone));
       }
     }
 

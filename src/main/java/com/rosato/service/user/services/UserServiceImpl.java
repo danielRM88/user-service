@@ -1,7 +1,9 @@
 package com.rosato.service.user.services;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.rosato.service.user.controllers.UserEmailsController.UserNotFoundException;
 import com.rosato.service.user.models.User;
 import com.rosato.service.user.repositories.UserRepository;
 
@@ -20,7 +22,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User findById(Long userId) {
-    return userRepository.findById(userId).get();
+    Optional<User> result = userRepository.findById(userId);
+    if (!result.isPresent()) {
+      throw new UserNotFoundException();
+    }
+    return result.get();
   }
 
   @Override
