@@ -23,8 +23,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 @RestController
 @RequestMapping("/v1/users")
+@Api(value = "userservice", description = "Operations with the application's users")
 public class UsersController {
 
   @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "User already exists")
@@ -102,6 +108,8 @@ public class UsersController {
 
   @GetMapping("")
   @ResponseBody
+  @ApiOperation(value = "Retrieve all application's users, supports search by first name and/or last name", response = Iterable.class)
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list") })
   public Iterable<User> index(@RequestBody(required = false) SearchRequest request) {
     Iterable<User> users;
     String searchFirstName = null;
@@ -127,11 +135,18 @@ public class UsersController {
   }
 
   @GetMapping("/{userId}")
+  @ApiOperation(value = "Retrieve user by its user id", response = User.class)
+  @ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved user"),
+      @ApiResponse(code = 404, message = "User was not found") })
   public User show(@PathVariable Long userId) {
     return userService.findById(userId);
   }
 
   @PostMapping("")
+  @ApiOperation(value = "Create new user", response = User.class)
+  @ApiResponses(value = { @ApiResponse(code = 201, message = "Successfully created user"),
+      @ApiResponse(code = 400, message = "Bad request") })
+  @ResponseStatus(HttpStatus.CREATED)
   public User create(@Valid @RequestBody CreateUserRequest request) {
     User user = new User();
     user.setFirstName(request.getFirstName());
