@@ -2,6 +2,7 @@ package com.rosato.service.user.repositories;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -23,12 +24,31 @@ public class UserRepositoryTest {
   private PhoneRepository phoneRepository;
 
   @Test
+  void injectedComponentsAreNotNull() {
+    assertNotNull(userRepository);
+    assertNotNull(userEmailRepository);
+    assertNotNull(phoneRepository);
+  }
+
+  @Test
   public void shouldPersistUser() {
     User u = new User();
     u.setFirstName("Daniel");
     u.setLastName("Rosato");
     userRepository.save(u);
-    assertTrue(userRepository.count() == 1);
+    assertNotNull(userRepository.findByFirstNameAndLastName("Daniel", "Rosato"));
+  }
+
+  @Test
+  public void shouldUpdateUser() {
+    User u = new User();
+    u.setFirstName("New");
+    u.setLastName("Last");
+    userRepository.save(u);
+    assertNotNull(userRepository.findByFirstNameAndLastName("New", "Last"));
+    u.setLastName("NewLast");
+    userRepository.save(u);
+    assertNotNull(userRepository.findByFirstNameAndLastName("New", "NewLast"));
   }
 
   @Test
