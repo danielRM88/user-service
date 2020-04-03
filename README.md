@@ -6,7 +6,8 @@ User service.
 
 ## Run the app
 
-Type the following in a terminal
+Docker is required to run the application.
+Type the following in a terminal:
 
 `make run`
 
